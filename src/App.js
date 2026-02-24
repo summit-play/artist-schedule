@@ -82,7 +82,7 @@ const TeaserLayout = ({ order, color, isExport = false }) => {
 };
 
 const SchedulerLayout = ({ order, desc, isExport = false }) => {
-  const dim = isExport ? { width: '2400px', height: '3000px', padding: isExport ? '160px' : '40px' } : { width: '100%', height: '100%', padding: '40px' };
+  const dim = isExport ? { width: '2400px', minHeight: '3200px', padding: '160px', boxSizing: 'border-box' } : { width: '100%', height: '100%', padding: '40px', boxSizing: 'border-box' };
   return (
     <div className="flex flex-col bg-white text-black overflow-hidden text-left font-sans" style={{ ...dim }}>
       <div className={`flex items-center justify-between border-black ${!isExport ? 'mb-8 border-b-8 pb-4' : ''}`}
@@ -210,7 +210,7 @@ const App = () => {
     const scripts = [
       "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
       "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js",
-      "https://cdn.tailwindcss.com" // Tailwind CDN 동적 로드 추가
+      "https://cdn.tailwindcss.com"
     ];
     scripts.forEach(src => {
       const s = document.createElement('script'); s.src = src; s.async = true;
@@ -380,8 +380,8 @@ const App = () => {
           </div>
           <div className="flex flex-col items-center gap-8">
             <span className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">P2. Schedule Board</span>
-            <div className="shadow-2xl rounded-3xl overflow-hidden bg-white border border-white/5" style={{ width: '348px', height: '435px' }}>
-              <div id="public-schedule" style={{ width: '2400px', height: '3000px', transform: 'scale(0.145)', transformOrigin: 'top left' }}>
+            <div className="shadow-2xl rounded-3xl overflow-hidden bg-white border border-white/5" style={{ width: '348px', height: '464px' }}>
+              <div id="public-schedule" style={{ width: '2400px', minHeight: '3200px', transform: 'scale(0.145)', transformOrigin: 'top left' }}>
                 <SchedulerLayout order={publicOrder} desc={publicOrder.description} isExport={true} />
               </div>
             </div>
