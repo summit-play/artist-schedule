@@ -34,20 +34,20 @@ import {
 } from 'firebase/firestore';
 
 // --- 글로벌 설정 및 상수 ---
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'teureobwa-excel-admin';
-const firebaseConfig = typeof __firebase_config !== 'undefined' 
-  ? JSON.parse(__firebase_config) 
-  : { apiKey: "mock", authDomain: "mock", projectId: "mock", storageBucket: "mock", messagingSenderId: "mock", appId: "mock" };
+const appId = 'teureobwa-excel-admin';
+const firebaseConfig = {
+  apiKey: "AIzaSyBXLZdseQ7IR7K4gBuv13Esv1vdcRZFwmM",
+  authDomain: "imweb-admin.firebaseapp.com",
+  projectId: "imweb-admin",
+  storageBucket: "imweb-admin.firebasestorage.app",
+  messagingSenderId: "488642428115",
+  appId: "1:488642428115:web:e3544a81c39110d551e826"
+};
 
 const CUSTOM_STATUSES = ['셋팅 필요', '송출중', '결과보고 필요', '캠페인 완료'];
+const DEPLOY_URL = 'https://artist-schedule.vercel.app';
 
-/**
- * [수정됨] 위험한 사이트 경고 방지를 위해 실제 접속 주소(origin)를 그대로 사용합니다.
- * 실제 정식 도메인 배포 후 고정 주소가 필요하다면 "https://실제도메인.com" 형태로 수정하세요.
- */
-const DEPLOY_URL = window.location.origin;
-
-// --- 디자인 레이아웃 컴포넌트 (변경 절대 금지 - 현재 사양 유지) ---
+// --- 디자인 레이아웃 컴포넌트 ---
 
 const TeaserLayout = ({ order, color, isExport = false }) => {
   const dim = isExport ? { width: '1080px', height: '1920px' } : { width: '100%', height: '100%' };
@@ -149,7 +149,6 @@ const App = () => {
   const [localDesc, setLocalDesc] = useState('');
   const [toast, setToast] = useState(null);
 
-  // 훅 최상단 배치
   const selectedOrderForMessage = useMemo(() => orders.find(o => o.id === selectedOrderIdForMessage), [orders, selectedOrderIdForMessage]);
   const selectedOrderForDetail = useMemo(() => orders.find(o => o.id === selectedOrderIdForDetail), [orders, selectedOrderIdForDetail]);
 
@@ -161,7 +160,6 @@ const App = () => {
     });
   }, [orders, filterStatus, searchTerm]);
 
-  // 1. 초기화
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const vId = params.get('v');
@@ -183,14 +181,12 @@ const App = () => {
       const firebaseAuth = getAuth(app);
       setDb(firestore);
       setAuth(firebaseAuth);
-      if (typeof __initial_auth_token !== 'undefined') { await signInWithCustomToken(firebaseAuth, __initial_auth_token); } 
-      else { await signInAnonymously(firebaseAuth); }
+      await signInAnonymously(firebaseAuth);
       onAuthStateChanged(firebaseAuth, (user) => { if (user) setUserId(user.uid); setIsAuthReady(true); });
     };
     initFirebase();
   }, []);
 
-  // 2. 실시간 데이터 동기화
   useEffect(() => {
     if (!isAuthReady || !db) return;
     const ordersRef = collection(db, `artifacts/${appId}/public/data/orders`);
@@ -199,6 +195,9 @@ const App = () => {
       snapshot.forEach(doc => { orderList.push({ id: doc.id, ...doc.data() }); });
       orderList.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
       setOrders(orderList);
+      setLoading(false);
+    }, (error) => {
+      console.error("Firebase fetch error:", error);
       setLoading(false);
     });
     return () => unsubscribe();
@@ -303,11 +302,8 @@ const App = () => {
     link.click();
   };
 
-  // --- 문자 메세지 발송 (404/위험한 사이트 해결 로직) ---
   const copySmsText = (order) => {
     if (!order) return;
-    
-    // 수정됨: DEPLOY_URL(현재 origin)을 사용하여 유효한 링크 생성
     const shareUrl = `${DEPLOY_URL}/?v=${order.id}`;
     
     const smsContent = `안녕하세요, 아티스트 ${order.artist}님.
@@ -357,7 +353,6 @@ const App = () => {
     showToast('모든 이미지가 저장되었습니다.');
   };
 
-  // --- 아티스트 전용 랜딩페이지 (Public View) ---
   if (publicViewId) {
     const publicOrder = orders.find(o => o.id === publicViewId);
     if (!publicOrder && !loading) return <div className="h-screen flex items-center justify-center font-black bg-[#0a0a0a] text-white">데이터를 찾을 수 없습니다.</div>;
