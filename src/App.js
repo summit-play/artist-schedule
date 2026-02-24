@@ -52,31 +52,31 @@ const TeaserLayout = ({ order, color, isExport = false }) => {
   const bgColor = color || order?.dominantColor || '#1e1e1e';
   
   return (
-    <div className="flex flex-col relative text-center items-center justify-center font-sans" 
-         style={{ ...dim, backgroundColor: bgColor, color: 'white', padding: isExport ? '48px' : '3rem' }}>
+    <div className="flex flex-col relative text-center items-center font-sans" 
+         style={{ ...dim, backgroundColor: bgColor, color: 'white', padding: isExport ? '120px 48px 80px' : '3rem', boxSizing: 'border-box', justifyContent: 'center' }}>
       <h2 className={`font-black uppercase italic leading-none tracking-tighter ${!isExport ? 'text-5xl mb-8' : ''}`}
-          style={isExport ? { fontSize: '140px', marginBottom: '96px' } : {}}>Coming Soon</h2>
+          style={isExport ? { fontSize: '130px', marginBottom: '80px' } : {}}>Coming Soon</h2>
       
       <div className={`relative aspect-square shadow-2xl rotate-1 flex-shrink-0 overflow-hidden border-white/10 ${!isExport ? 'w-60 mb-8 border-4' : ''}`}
-           style={isExport ? { width: '750px', marginBottom: '112px', borderWidth: '24px' } : {}}>
+           style={isExport ? { width: '700px', marginBottom: '80px', borderWidth: '20px' } : {}}>
         <img src={order?.image} className="w-full h-full object-cover" crossOrigin="Anonymous" alt="" />
       </div>
 
-      <div className="space-y-4" style={isExport ? { display: 'flex', flexDirection: 'column', gap: '24px' } : {}}>
+      <div className="space-y-4" style={isExport ? { display: 'flex', flexDirection: 'column', gap: '20px' } : {}}>
         <h3 className={`font-black uppercase tracking-tighter leading-none ${!isExport ? 'text-3xl' : ''}`}
-            style={isExport ? { fontSize: '110px' } : {}}>{order?.artist || '아티스트명'}</h3>
+            style={isExport ? { fontSize: '100px' } : {}}>{order?.artist || '아티스트명'}</h3>
         <p className={`font-light italic opacity-80 ${!isExport ? 'text-lg mt-6' : ''}`}
-           style={isExport ? { fontSize: '64px', marginTop: '24px' } : {}}>"{order?.title || '곡 제목'}"</p>
+           style={isExport ? { fontSize: '60px', marginTop: '16px' } : {}}>"{order?.title || '곡 제목'}"</p>
       </div>
       
       <div className={`border-white/20 ${!isExport ? 'mt-8 py-3 px-8 border-y' : ''}`}
-           style={isExport ? { marginTop: '96px', padding: '48px 96px', borderTopWidth: '10px', borderBottomWidth: '10px' } : {}}>
+           style={isExport ? { marginTop: '80px', padding: '40px 80px', borderTopWidth: '8px', borderBottomWidth: '8px' } : {}}>
          <p className={`font-black italic ${!isExport ? 'text-xl' : ''}`}
-            style={isExport ? { fontSize: '80px' } : {}}>{order?.broadcastPeriod || '송출일 미정'}</p>
+            style={isExport ? { fontSize: '76px' } : {}}>{order?.broadcastPeriod || '송출일 미정'}</p>
       </div>
 
       <div className={`font-black italic opacity-40 tracking-tighter ${!isExport ? 'mt-8 text-2xl' : ''}`}
-           style={isExport ? { marginTop: '112px', fontSize: '96px' } : {}}>틀어봐</div>
+           style={isExport ? { marginTop: '80px', fontSize: '88px' } : {}}>틀어봐</div>
     </div>
   );
 };
