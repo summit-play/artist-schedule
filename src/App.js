@@ -45,7 +45,7 @@ setLogLevel('debug');
 
 const CUSTOM_STATUSES = ['셋팅 필요', '송출중', '결과보고 필요', '캠페인 완료'];
 
-// ✅ FIX 1) 링크는 무조건 Vercel 고정
+// ✅ 링크는 무조건 Vercel 고정
 const DEPLOY_URL = 'https://artist-schedule.vercel.app';
 
 // --- Assets ---
@@ -54,12 +54,33 @@ const ASSETS = {
   APP_SEARCH: "https://r.jina.ai/i/063f25c8366487e69f88c3a70908865d",
   APP_DETAIL: "https://r.jina.ai/i/21df02e2133481288f69747970728956",
 
-  // ✅ FIX 2) 업로드 이미지로 변경 (GitHub public 폴더에 파일 있어야 함)
-  // public/p4.png (업로드 1번)
-  // public/p5.png (업로드 2번)
+  // ✅ 1번/2번 이미지 (이미 배포되어 있다고 했으니 이 경로 고정)
   P4_DISPLAY: "/p4.png",
   P5_APP: "/p5.png",
 };
+
+// ----------------------------
+// UI Helpers
+// ----------------------------
+const Section = ({ label, title, children }) => (
+  <section className="w-full">
+    <div className="flex items-center justify-between mb-3">
+      <div className="flex flex-col items-start">
+        <div className="text-white/35 text-[10px] font-black uppercase italic tracking-widest">{label}</div>
+        <div className="text-white font-black text-lg tracking-tight">{title}</div>
+      </div>
+    </div>
+    <div className="rounded-3xl border border-white/10 bg-white/[0.03] shadow-2xl overflow-hidden">
+      {children}
+    </div>
+  </section>
+);
+
+const SoftCard = ({ children, className = '' }) => (
+  <div className={`rounded-3xl border border-white/10 bg-black/40 backdrop-blur overflow-hidden ${className}`}>
+    {children}
+  </div>
+);
 
 // --- Design Layout Components ---
 
@@ -128,131 +149,120 @@ const TeaserLayout = ({ order, color, isExport = false }) => {
 };
 
 const SchedulerLayout = ({ order, desc, isExport = false }) => {
+  // ✅ 공개 페이지는 “읽기 좋게” 보여주는 게 목표라 overflow-visible 제거
   const dim = isExport
     ? { width: '2400px', minHeight: '3200px', height: 'auto', padding: '160px', boxSizing: 'border-box' }
-    : { width: '100%', height: '100%', padding: '40px', boxSizing: 'border-box' };
+    : { width: '100%', height: 'auto', padding: '28px', boxSizing: 'border-box' };
 
   return (
-    <div className="flex flex-col bg-white text-black overflow-visible text-left font-sans" style={{ ...dim }}>
+    <div className="flex flex-col bg-white text-black text-left font-sans" style={{ ...dim }}>
       <div
-        className={`flex items-center justify-between border-black ${!isExport ? 'mb-8 border-b-8 pb-4' : ''}`}
+        className={`flex items-center justify-between border-black ${!isExport ? 'mb-6 border-b-4 pb-4' : ''}`}
         style={isExport ? { marginBottom: '192px', borderBottomWidth: '40px', paddingBottom: '96px' } : {}}
       >
-        <h2 className={`font-black uppercase italic leading-none ${!isExport ? 'text-4xl' : ''}`} style={isExport ? { fontSize: '280px' } : {}}>
+        <h2 className={`font-black uppercase italic leading-none ${!isExport ? 'text-2xl' : ''}`} style={isExport ? { fontSize: '280px' } : {}}>
           Scheduler
         </h2>
-        <span className={`font-black uppercase ${!isExport ? 'text-lg' : ''}`} style={isExport ? { fontSize: '100px' } : {}}>
+        <span className={`font-black uppercase ${!isExport ? 'text-sm' : ''}`} style={isExport ? { fontSize: '100px' } : {}}>
           틀어봐
         </span>
       </div>
 
-      <div className={`flex items-center ${!isExport ? 'gap-6 mb-8' : ''}`} style={isExport ? { gap: '96px', marginBottom: '128px' } : {}}>
+      <div className={`flex items-center ${!isExport ? 'gap-4 mb-6' : ''}`} style={isExport ? { gap: '96px', marginBottom: '128px' } : {}}>
         <img
           src={order?.image}
-          className={`object-cover shadow-xl border-slate-50 ${!isExport ? 'w-32 h-32 rounded-2xl border-4' : ''}`}
+          className={`object-cover shadow-xl border-slate-50 ${!isExport ? 'w-16 h-16 rounded-2xl border-2' : ''}`}
           style={isExport ? { width: '700px', height: '700px', borderRadius: '6rem', borderWidth: '20px' } : {}}
           crossOrigin="anonymous"
           alt=""
         />
-        <div className="space-y-2" style={isExport ? { display: 'flex', flexDirection: 'column', gap: '32px' } : {}}>
-          <h3 className={`font-black uppercase leading-tight tracking-tight ${!isExport ? 'text-2xl' : ''}`} style={isExport ? { fontSize: '140px' } : {}}>
+        <div className="min-w-0">
+          <h3 className={`font-black uppercase leading-tight tracking-tight ${!isExport ? 'text-xl' : ''}`} style={isExport ? { fontSize: '140px' } : {}}>
             {order?.artist}
           </h3>
-          <p className={`font-bold text-slate-500 italic ${!isExport ? 'text-lg' : ''}`} style={isExport ? { fontSize: '90px' } : {}}>
+          <p className={`font-bold text-slate-500 italic ${!isExport ? 'text-sm' : ''}`} style={isExport ? { fontSize: '90px' } : {}}>
             "{order?.title}"
           </p>
         </div>
       </div>
 
-      <div className="flex-1" style={isExport ? { display: 'flex', flexDirection: 'column', gap: '48px', flex: 1 } : {}}>
+      <div className="space-y-5">
         <div>
-          <p
-            className={`font-black text-slate-400 uppercase tracking-widest ${!isExport ? 'text-[10px] mb-1' : ''}`}
-            style={isExport ? { fontSize: '48px', marginBottom: '24px' } : {}}
-          >
+          <p className={`font-black text-slate-400 uppercase tracking-widest ${!isExport ? 'text-[10px] mb-1' : ''}`}
+            style={isExport ? { fontSize: '48px', marginBottom: '24px' } : {}}>
             Product
           </p>
-          <p className="font-bold" style={isExport ? { fontSize: '80px' } : {}}>
-            {order?.productName}
-          </p>
+          <p className="font-bold">{order?.productName}</p>
         </div>
 
-        <div className={!isExport ? 'mt-8' : ''} style={isExport ? { marginTop: '64px' } : {}}>
-          <p
-            className={`font-black text-slate-400 uppercase tracking-widest ${!isExport ? 'text-[10px] mb-1' : ''}`}
-            style={isExport ? { fontSize: '48px', marginBottom: '24px' } : {}}
-          >
+        <div>
+          <p className={`font-black text-slate-400 uppercase tracking-widest ${!isExport ? 'text-[10px] mb-1' : ''}`}
+            style={isExport ? { fontSize: '48px', marginBottom: '24px' } : {}}>
             Period
           </p>
-          <p className={`font-black italic text-indigo-600 ${!isExport ? 'text-xl' : ''}`} style={isExport ? { fontSize: '120px' } : {}}>
+          <p className={`font-black italic text-indigo-600 ${!isExport ? 'text-lg' : ''}`}
+            style={isExport ? { fontSize: '120px' } : {}}>
             {order?.broadcastPeriod || 'TBA'}
           </p>
         </div>
 
-        <div
-          className={`bg-slate-50 border-dashed border-slate-200 shadow-inner ${!isExport ? 'mt-10 p-6 rounded-2xl border-2' : ''}`}
-          style={isExport ? { marginTop: '80px', padding: '96px', borderRadius: '5rem', borderWidth: '12px' } : {}}
-        >
-          <p className={`font-black text-slate-400 uppercase ${!isExport ? 'text-[10px] mb-2' : ''}`} style={isExport ? { fontSize: '48px', marginBottom: '40px' } : {}}>
+        <div className={`bg-slate-50 border-dashed border-slate-200 shadow-inner ${!isExport ? 'p-5 rounded-2xl border' : ''}`}
+          style={isExport ? { marginTop: '80px', padding: '96px', borderRadius: '5rem', borderWidth: '12px' } : {}}>
+          <p className={`font-black text-slate-400 uppercase ${!isExport ? 'text-[10px] mb-2' : ''}`}
+            style={isExport ? { fontSize: '48px', marginBottom: '40px' } : {}}>
             Description
           </p>
-          <p
-            className={`font-medium text-slate-600 italic break-words whitespace-pre-wrap ${!isExport ? 'text-sm' : ''}`}
-            style={isExport ? { fontSize: '72px', lineHeight: '1.5' } : {}}
-          >
+          <p className={`font-medium text-slate-600 italic break-words whitespace-pre-wrap ${!isExport ? 'text-sm leading-relaxed' : ''}`}
+            style={isExport ? { fontSize: '72px', lineHeight: '1.5' } : {}}>
             {desc || order?.description}
           </p>
         </div>
       </div>
 
-      <div className={`mt-auto flex items-center justify-between opacity-20 border-slate-200 ${!isExport ? 'pt-4 border-t' : ''}`} style={isExport ? { marginTop: 'auto', paddingTop: '96px', borderTopWidth: '10px' } : {}}>
-        <h4 className={`font-black tracking-[-0.2em] italic ${!isExport ? 'text-4xl' : ''}`} style={isExport ? { fontSize: '160px' } : {}}>
-          틀어봐
-        </h4>
+      <div className={`mt-8 flex items-center justify-between opacity-20 border-slate-200 pt-4 border-t`}>
+        <h4 className="font-black tracking-[-0.2em] italic text-3xl">틀어봐</h4>
       </div>
     </div>
   );
 };
 
 const PosterLayout = ({ order, color, desc, isExport = false }) => {
-  const dim = isExport ? { width: '1059px', height: '2571px' } : { width: '100%', height: '100%', minHeight: '857px' };
+  // ✅ 공개 페이지에선 과한 minHeight 때문에 카드가 어색해질 수 있어서 minHeight 제거/완화
+  const dim = isExport ? { width: '1059px', height: '2571px' } : { width: '100%', height: '100%' };
   const bgColor = color || order?.dominantColor || '#000';
 
   return (
     <div className="flex flex-col relative overflow-hidden font-sans" style={{ ...dim, backgroundColor: bgColor, color: 'white' }}>
-      <div className={`text-center ${!isExport ? 'pt-24 px-10' : ''}`} style={isExport ? { paddingTop: '320px', paddingLeft: '80px', paddingRight: '80px' } : {}}>
-        <div
-          className={`relative aspect-square shadow-2xl mx-auto border-white/20 ${!isExport ? 'w-64 border-2' : ''}`}
-          style={isExport ? { width: '800px', borderWidth: '20px', margin: '0 auto' } : {}}
-        >
+      <div className={`text-center ${!isExport ? 'pt-16 px-8' : ''}`} style={isExport ? { paddingTop: '320px', paddingLeft: '80px', paddingRight: '80px' } : {}}>
+        <div className={`relative aspect-square shadow-2xl mx-auto border-white/20 ${!isExport ? 'w-56 border-2' : ''}`}
+             style={isExport ? { width: '800px', borderWidth: '20px', margin: '0 auto' } : {}}>
           <img src={order?.image} className="w-full h-full object-cover" crossOrigin="anonymous" alt="" />
         </div>
       </div>
 
-      <div className={`flex flex-col ${!isExport ? 'px-10 mt-16 flex-1' : ''}`} style={isExport ? { paddingLeft: '96px', paddingRight: '96px', marginTop: '160px', flex: 1, display: 'flex', flexDirection: 'column' } : {}}>
-        <div className="text-center" style={{ marginBottom: '64px' }}>
-          <h2
-            className={`font-black tracking-tighter uppercase break-keep leading-none ${!isExport ? 'text-4xl' : ''}`}
-            style={isExport ? { fontSize: '120px', marginBottom: '40px' } : {}}
-          >
+      <div className={`flex flex-col ${!isExport ? 'px-8 mt-10 flex-1' : ''}`}
+           style={isExport ? { paddingLeft: '96px', paddingRight: '96px', marginTop: '160px', flex: 1, display: 'flex', flexDirection: 'column' } : {}}>
+        <div className="text-center" style={{ marginBottom: '36px' }}>
+          <h2 className={`font-black tracking-tighter uppercase break-keep leading-none ${!isExport ? 'text-3xl' : ''}`}
+              style={isExport ? { fontSize: '120px', marginBottom: '40px' } : {}}>
             {order?.artist || '아티스트명'}
           </h2>
-          <h4 className={`font-light opacity-80 italic ${!isExport ? 'text-xl mt-6' : ''}`} style={isExport ? { fontSize: '72px', marginTop: '24px' } : {}}>
+          <h4 className={`font-light opacity-80 italic ${!isExport ? 'text-lg mt-4' : ''}`}
+              style={isExport ? { fontSize: '72px', marginTop: '24px' } : {}}>
             "{order?.title || '곡 제목'}"
           </h4>
         </div>
 
-        <div className={`w-full bg-white/20 ${!isExport ? 'mb-10 h-px' : ''}`} style={isExport ? { height: '1px', marginBottom: '64px' } : {}} />
+        <div className="w-full bg-white/20 h-px mb-8"></div>
 
-        <p
-          className={`text-center opacity-90 font-bold italic whitespace-pre-wrap break-words ${!isExport ? 'text-sm leading-relaxed' : ''}`}
-          style={isExport ? { fontSize: '64px', lineHeight: '1.7' } : {}}
-        >
+        <p className={`text-center opacity-90 font-bold italic whitespace-pre-wrap break-words ${!isExport ? 'text-sm leading-relaxed' : ''}`}
+           style={isExport ? { fontSize: '64px', lineHeight: '1.7' } : {}}>
           {desc || order?.description || '음악 설명을 작성해 주세요.'}
         </p>
       </div>
 
-      <div className={`text-center font-black italic opacity-20 tracking-tighter ${!isExport ? 'pb-10 text-4xl mt-auto' : ''}`} style={isExport ? { paddingBottom: '128px', fontSize: '100px', marginTop: 'auto' } : {}}>
+      <div className={`text-center font-black italic opacity-20 tracking-tighter ${!isExport ? 'pb-8 text-3xl mt-auto' : ''}`}
+           style={isExport ? { paddingBottom: '128px', fontSize: '100px', marginTop: 'auto' } : {}}>
         틀어봐
       </div>
     </div>
@@ -261,9 +271,9 @@ const PosterLayout = ({ order, color, desc, isExport = false }) => {
 
 // ✅ P4: 업로드 1번 이미지
 const DisplayMockupLayout = ({ isExport = false }) => {
-  const dim = isExport ? { width: '1080px', height: '1080px' } : { width: '100%', aspectRatio: '1/1' };
+  const dim = isExport ? { width: '1080px', height: '1080px' } : { width: '100%', height: '100%' };
   return (
-    <div className="relative overflow-hidden bg-black flex items-center justify-center" style={{ ...dim }}>
+    <div className="w-full h-full bg-black" style={{ ...dim }}>
       <img src={ASSETS.P4_DISPLAY} alt="P4 디스플레이" className="w-full h-full object-cover" crossOrigin="anonymous" />
     </div>
   );
@@ -271,9 +281,9 @@ const DisplayMockupLayout = ({ isExport = false }) => {
 
 // ✅ P5: 업로드 2번 이미지
 const ClientMockupLayout = ({ isExport = false }) => {
-  const dim = isExport ? { width: '1080px', height: '1080px' } : { width: '100%', aspectRatio: '1/1' };
+  const dim = isExport ? { width: '1080px', height: '1080px' } : { width: '100%', height: '100%' };
   return (
-    <div className="relative overflow-hidden bg-black flex items-center justify-center" style={{ ...dim }}>
+    <div className="w-full h-full bg-black" style={{ ...dim }}>
       <img src={ASSETS.P5_APP} alt="P5 앱노출" className="w-full h-full object-cover" crossOrigin="anonymous" />
     </div>
   );
@@ -501,146 +511,147 @@ const App = () => {
   };
 
   const downloadForArtist = async (order) => {
+    // (기능 유지) — 현재 UI는 미리보기 최적화라서,
+    // 다운로드 퀄리티까지 완벽하게 하려면 별도의 export DOM을 따로 두는 게 베스트.
+    // 지금은 기존대로 "현재 보여지는 카드 DOM"을 캡처하는 방식 유지.
     showToast('고화질 이미지 생성 중...');
     const ids = ['teaser', 'schedule', 'poster', 'display', 'client'];
     const names = ['티저', '스케줄', '포스터', '디스플레이_예시', '앱노출_예시'];
     for (let i = 0; i < ids.length; i++) {
       const el = document.getElementById(`public-${ids[i]}`);
-      if (el) {
+      if (el && window.html2canvas) {
         const canvas = await window.html2canvas(el, { useCORS: true, scale: 2 });
         const link = document.createElement('a');
         link.download = `틀어봐_${order.artist}_${names[i]}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, 800));
       }
     }
     showToast('저장 완료.');
   };
 
-  // --- Render Views ---
-
+  // ----------------------------
+  // ✅ PUBLIC VIEW (스케줄 확인하기 링크)
+  // ----------------------------
   if (publicViewId) {
     const publicOrder = orders.find(o => o.id === publicViewId);
     if (!publicOrder && !loading) return <div className="h-screen flex items-center justify-center font-black bg-[#0a0a0a] text-white">데이터를 찾을 수 없습니다.</div>;
     if (loading) return <div className="h-screen flex flex-col items-center justify-center font-black bg-[#0a0a0a] text-white space-y-4"><RefreshCw className="animate-spin" /></div>;
 
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center p-4 md:p-10 space-y-16 overflow-y-auto font-sans text-center text-white">
-        <header className="flex flex-col items-center max-w-2xl text-center">
-          <div className="bg-white/10 px-4 py-1 rounded-full text-[10px] font-black uppercase mb-4 border border-white/10 italic tracking-widest">Curation Service</div>
-          <h1 className="text-4xl font-black italic tracking-tight uppercase">틀어봐 SCHEDULER</h1>
-          <p className="text-sm opacity-60 mt-6 leading-relaxed italic">
-            안녕하세요, <strong>{publicOrder.artist}</strong>님! 제작된 홍보 이미지를 확인해 주세요.<br />
-            하단 버튼을 눌러 고화질 원본 파일을 다운로드하실 수 있습니다.
-          </p>
-          <button
-            onClick={() => downloadForArtist(publicOrder)}
-            className="mt-10 px-12 py-5 bg-indigo-600 text-white rounded-full font-black text-sm flex items-center gap-3 shadow-2xl shadow-indigo-500/30 hover:scale-105 transition-transform"
-          >
-            <Download size={20} /> 고화질 이미지 전체 다운로드
-          </button>
-        </header>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-20 w-full max-w-7xl items-start pb-24">
-          <div className="flex flex-col items-center gap-8">
-            <span className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">P1. Story Teaser</span>
-            <div className="shadow-2xl rounded-3xl overflow-hidden bg-black border border-white/5" style={{ width: '345.6px', height: '614.4px' }}>
-              <div id="public-teaser" style={{ width: '1080px', height: '1920px', transform: 'scale(0.32)', transformOrigin: 'top left' }}>
-                <TeaserLayout order={publicOrder} color={publicOrder.dominantColor} isExport={true} />
+      <div className="min-h-screen bg-[#0a0a0a] text-white">
+        {/* Top Header */}
+        <div className="sticky top-0 z-30 bg-black/60 backdrop-blur border-b border-white/10">
+          <div className="max-w-5xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
+            <div className="min-w-0">
+              <div className="text-white/40 text-[10px] font-black uppercase italic tracking-widest">Curation Service</div>
+              <div className="font-black italic text-xl md:text-2xl tracking-tight truncate">틀어봐 SCHEDULER</div>
+              <div className="text-white/60 text-xs mt-1 truncate">
+                {publicOrder.artist} · "{publicOrder.title}"
               </div>
             </div>
-          </div>
 
-          <div className="flex flex-col items-center gap-8">
-            <span className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">P2. Schedule Board</span>
-            <div className="shadow-2xl rounded-3xl overflow-visible bg-white border border-white/5" style={{ width: '348px', minHeight: '464px' }}>
-              <div id="public-schedule" style={{ width: '2400px', transform: 'scale(0.145)', transformOrigin: 'top left' }}>
-                <SchedulerLayout order={publicOrder} desc={publicOrder.description} isExport={true} />
-              </div>
-            </div>
-          </div>
-
-          {/* ✅ FIX 3) P2 아래에 P4/P5 추가 노출 */}
-          <div className="flex flex-col items-center gap-8 lg:col-span-3">
-            <span className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">
-              Schedule + Preview (P4 / P5)
-            </span>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-4xl">
-              <div className="flex flex-col items-center gap-4">
-                <div className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">P4. Display</div>
-                <div className="shadow-2xl rounded-3xl overflow-hidden bg-black border border-white/5" style={{ width: '345.6px', height: '345.6px' }}>
-                  <div style={{ width: '1080px', height: '1080px', transform: 'scale(0.32)', transformOrigin: 'top left' }}>
-                    <DisplayMockupLayout isExport={true} />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center gap-4">
-                <div className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">P5. App</div>
-                <div className="shadow-2xl rounded-3xl overflow-hidden bg-black border border-white/5" style={{ width: '345.6px', height: '345.6px' }}>
-                  <div style={{ width: '1080px', height: '1080px', transform: 'scale(0.32)', transformOrigin: 'top left' }}>
-                    <ClientMockupLayout isExport={true} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center gap-8">
-            <span className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">P3. Music Poster</span>
-            <div className="shadow-2xl rounded-3xl overflow-hidden bg-black border border-white/5" style={{ width: '338.8px', height: '822.7px' }}>
-              <div id="public-poster" style={{ width: '1059px', height: '2571px', transform: 'scale(0.32)', transformOrigin: 'top left' }}>
-                <PosterLayout order={publicOrder} color={publicOrder.dominantColor} desc={publicOrder.description} isExport={true} />
-              </div>
-            </div>
-          </div>
-
-          {/* 기존 P4 */}
-          <div className="flex flex-col items-center gap-8">
-            <span className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">P4. Shop Display</span>
-            <div id="public-display" className="shadow-2xl rounded-3xl overflow-hidden bg-black border border-white/5" style={{ width: '345.6px', height: '345.6px' }}>
-              <div style={{ width: '1080px', height: '1080px', transform: 'scale(0.32)', transformOrigin: 'top left' }}>
-                <DisplayMockupLayout isExport={true} />
-              </div>
-            </div>
-          </div>
-
-          {/* 기존 P5 */}
-          <div className="flex flex-col items-center gap-8">
-            <span className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">P5. Mobile App</span>
-            <div id="public-client" className="shadow-2xl rounded-3xl overflow-hidden bg-black border border-white/5" style={{ width: '345.6px', height: '345.6px' }}>
-              <div style={{ width: '1080px', height: '1080px', transform: 'scale(0.32)', transformOrigin: 'top left' }}>
-                <ClientMockupLayout isExport={true} />
-              </div>
-            </div>
+            <button
+              onClick={() => downloadForArtist(publicOrder)}
+              className="shrink-0 px-4 md:px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-black text-xs md:text-sm flex items-center gap-2 shadow-2xl shadow-indigo-500/25"
+            >
+              <Download size={18} /> 전체 다운로드
+            </button>
           </div>
         </div>
 
-        <footer className="w-full max-w-4xl border-t border-white/10 pt-16 pb-20 flex flex-col items-center space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full text-left">
-            <a href="https://summitplay.notion.site/2dc77dadb820803aa606cf900e84c5fd" target="_blank" rel="noopener noreferrer" className="bg-white/5 hover:bg-white/10 border border-white/10 p-6 rounded-3xl flex items-center justify-between group transition-all">
-              <div>
-                <p className="text-white/40 text-[10px] font-black uppercase mb-1">Store List</p>
-                <p className="text-white font-bold">송출 매장 확인하기</p>
-              </div>
-              <ExternalLink size={20} className="text-white/20 group-hover:text-white" />
-            </a>
-            <div className="bg-white/5 border border-white/10 p-6 rounded-3xl flex items-center justify-between">
-              <div>
-                <p className="text-white/40 text-[10px] font-black uppercase mb-1">Inquiry</p>
-                <p className="text-white font-bold text-sm">summitplay@summit-play.com</p>
-              </div>
-              <Mail size={20} className="text-white/20" />
+        {/* Body */}
+        <div className="max-w-5xl mx-auto px-4 md:px-8 py-10 space-y-10">
+          {/* Intro */}
+          <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 md:p-8">
+            <div className="text-white/70 text-sm leading-relaxed italic">
+              안녕하세요, <span className="font-black text-white">{publicOrder.artist}</span>님!<br />
+              제작된 홍보 이미지를 아래에서 확인해 주세요. (모바일/웹 모두 겹치지 않게 최적화)
+            </div>
+
+            <div className="mt-5 flex flex-col md:flex-row gap-3">
+              <button
+                onClick={() => downloadForArtist(publicOrder)}
+                className="px-5 py-4 bg-white text-black rounded-2xl font-black text-sm flex items-center justify-center gap-2 hover:scale-[1.01] transition-transform"
+              >
+                <Download size={18} /> 고화질 이미지 전체 다운로드
+              </button>
+
+              <a
+                href="https://summitplay.notion.site/2dc77dadb820803aa606cf900e84c5fd"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-4 bg-white/5 border border-white/10 rounded-2xl font-black text-sm flex items-center justify-center gap-2 hover:bg-white/10 transition-colors"
+              >
+                <ExternalLink size={18} /> 송출 매장 확인하기
+              </a>
             </div>
           </div>
-          <div className="text-white/20 text-[10px] font-black italic uppercase tracking-widest">© PLAYSOMETUNES / 틀어봐</div>
-        </footer>
+
+          {/* P1 */}
+          <Section label="P1" title="Story Teaser">
+            <div id="public-teaser" className="p-4 md:p-6">
+              <div className="mx-auto w-full max-w-sm aspect-[9/16] rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-black">
+                <TeaserLayout order={publicOrder} color={publicOrder.dominantColor} isExport={false} />
+              </div>
+            </div>
+          </Section>
+
+          {/* P2 */}
+          <Section label="P2" title="Schedule Board">
+            <div id="public-schedule">
+              <SchedulerLayout order={publicOrder} desc={publicOrder.description} isExport={false} />
+            </div>
+          </Section>
+
+          {/* P3 */}
+          <Section label="P3" title="Music Poster">
+            <div id="public-poster" className="p-4 md:p-6">
+              <div className="mx-auto w-full max-w-sm aspect-[9/16] rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-black">
+                <PosterLayout order={publicOrder} color={publicOrder.dominantColor} desc={publicOrder.description} isExport={false} />
+              </div>
+            </div>
+          </Section>
+
+          {/* P4/P5 - Clean Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Section label="P4" title="Shop Display">
+              <div id="public-display" className="p-4 md:p-6">
+                <SoftCard className="aspect-square">
+                  <DisplayMockupLayout isExport={false} />
+                </SoftCard>
+              </div>
+            </Section>
+
+            <Section label="P5" title="Mobile App">
+              <div id="public-client" className="p-4 md:p-6">
+                <SoftCard className="aspect-square">
+                  <ClientMockupLayout isExport={false} />
+                </SoftCard>
+              </div>
+            </Section>
+          </div>
+
+          {/* Footer */}
+          <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <div className="text-white/40 text-[10px] font-black uppercase tracking-widest">Inquiry</div>
+              <div className="font-black text-white">summitplay@summit-play.com</div>
+            </div>
+
+            <div className="text-white/25 text-[10px] font-black italic uppercase tracking-widest">
+              © PLAYSOMETUNES / 틀어봐
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
+  // ----------------------------
+  // ✅ ADMIN VIEW (원래 UI 유지)
+  // ----------------------------
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 font-sans overflow-hidden">
       {/* Sidebar */}
@@ -749,8 +760,6 @@ const App = () => {
                         <td className="px-8 py-7 text-center" onClick={e => e.stopPropagation()}>
                           <div className="flex items-center justify-center gap-2">
                             <button onClick={() => openStudio(o)} className="p-3 bg-slate-100 text-slate-900 rounded-xl hover:bg-black hover:text-white transition-all"><Send size={16} /></button>
-
-                            {/* ✅ 링크 복사도 무조건 Vercel 링크 */}
                             <button onClick={() => {
                               const shareUrl = `${DEPLOY_URL}/?v=${o.id}`;
                               const textArea = document.createElement("textarea");
@@ -865,13 +874,13 @@ const App = () => {
             <div className="flex-1 bg-[#0a0a0a] p-12 overflow-y-auto flex justify-center items-center">
               <div
                 ref={posterRef}
-                className="relative shadow-2xl overflow-visible flex flex-col transition-all duration-300"
+                className="relative shadow-2xl overflow-hidden flex flex-col transition-all duration-300"
                 style={{
-                  width: (messagePage === 1 || messagePage === 4 || messagePage === 5) ? '400px' : (messagePage === 2 ? '450px' : '353px'),
-                  minHeight: (messagePage === 4 || messagePage === 5) ? '400px' : (messagePage === 3 ? '857px' : (messagePage === 2 ? '500px' : '711px')),
+                  width: (messagePage === 1 || messagePage === 4 || messagePage === 5) ? '400px' : (messagePage === 2 ? '520px' : '353px'),
+                  minHeight: (messagePage === 4 || messagePage === 5) ? '400px' : (messagePage === 3 ? '700px' : (messagePage === 2 ? '520px' : '711px')),
                   backgroundColor: messagePage === 2 ? 'white' : (selectedOrderForMessage.dominantColor || dominantColor),
                   color: messagePage === 2 ? 'black' : 'white',
-                  borderRadius: (messagePage === 3 || messagePage === 4 || messagePage === 5) ? '0px' : '10px'
+                  borderRadius: '18px'
                 }}
               >
                 {messagePage === 1 && <TeaserLayout order={selectedOrderForMessage} color={selectedOrderForMessage.dominantColor || dominantColor} />}
