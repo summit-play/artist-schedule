@@ -30,8 +30,8 @@ import {
 
 // --- Configuration & Global Variables ---
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'teureobwa-excel-admin';
-const firebaseConfig = typeof __firebase_config !== 'undefined' 
-  ? JSON.parse(__firebase_config) 
+const firebaseConfig = typeof __firebase_config !== 'undefined'
+  ? JSON.parse(__firebase_config)
   : {
       apiKey: "AIzaSyBXLZdseQ7IR7K4gBuv13Esv1vdcRZFwmM",
       authDomain: "imweb-admin.firebaseapp.com",
@@ -44,15 +44,21 @@ const firebaseConfig = typeof __firebase_config !== 'undefined'
 setLogLevel('debug');
 
 const CUSTOM_STATUSES = ['셋팅 필요', '송출중', '결과보고 필요', '캠페인 완료'];
-const DEPLOY_URL = window.location.origin; // Canvas environment URL
+
+// ✅ FIX 1) 링크는 무조건 Vercel 고정
+const DEPLOY_URL = 'https://artist-schedule.vercel.app';
 
 // --- Assets ---
 const ASSETS = {
   SHOP_MOCKUP: "https://r.jina.ai/i/065116790b8480309995c72166946059",
   APP_SEARCH: "https://r.jina.ai/i/063f25c8366487e69f88c3a70908865d",
   APP_DETAIL: "https://r.jina.ai/i/21df02e2133481288f69747970728956",
-  P4_DISPLAY: "https://placehold.co/1080x1080/1e1e1e/white?text=P4+Display+Mockup",
-  P5_APP: "https://placehold.co/1080x1080/1e1e1e/white?text=P5+App+Mockup",
+
+  // ✅ FIX 2) 업로드 이미지로 변경 (GitHub public 폴더에 파일 있어야 함)
+  // public/p4.png (업로드 1번)
+  // public/p5.png (업로드 2번)
+  P4_DISPLAY: "/p4.png",
+  P5_APP: "/p5.png",
 };
 
 // --- Design Layout Components ---
@@ -253,7 +259,8 @@ const PosterLayout = ({ order, color, desc, isExport = false }) => {
   );
 };
 
-const DisplayMockupLayout = ({ order, isExport = false }) => {
+// ✅ P4: 업로드 1번 이미지
+const DisplayMockupLayout = ({ isExport = false }) => {
   const dim = isExport ? { width: '1080px', height: '1080px' } : { width: '100%', aspectRatio: '1/1' };
   return (
     <div className="relative overflow-hidden bg-black flex items-center justify-center" style={{ ...dim }}>
@@ -262,7 +269,8 @@ const DisplayMockupLayout = ({ order, isExport = false }) => {
   );
 };
 
-const ClientMockupLayout = ({ order, isExport = false }) => {
+// ✅ P5: 업로드 2번 이미지
+const ClientMockupLayout = ({ isExport = false }) => {
   const dim = isExport ? { width: '1080px', height: '1080px' } : { width: '100%', aspectRatio: '1/1' };
   return (
     <div className="relative overflow-hidden bg-black flex items-center justify-center" style={{ ...dim }}>
@@ -553,6 +561,33 @@ const App = () => {
             </div>
           </div>
 
+          {/* ✅ FIX 3) P2 아래에 P4/P5 추가 노출 */}
+          <div className="flex flex-col items-center gap-8 lg:col-span-3">
+            <span className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">
+              Schedule + Preview (P4 / P5)
+            </span>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-4xl">
+              <div className="flex flex-col items-center gap-4">
+                <div className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">P4. Display</div>
+                <div className="shadow-2xl rounded-3xl overflow-hidden bg-black border border-white/5" style={{ width: '345.6px', height: '345.6px' }}>
+                  <div style={{ width: '1080px', height: '1080px', transform: 'scale(0.32)', transformOrigin: 'top left' }}>
+                    <DisplayMockupLayout isExport={true} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center gap-4">
+                <div className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">P5. App</div>
+                <div className="shadow-2xl rounded-3xl overflow-hidden bg-black border border-white/5" style={{ width: '345.6px', height: '345.6px' }}>
+                  <div style={{ width: '1080px', height: '1080px', transform: 'scale(0.32)', transformOrigin: 'top left' }}>
+                    <ClientMockupLayout isExport={true} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="flex flex-col items-center gap-8">
             <span className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">P3. Music Poster</span>
             <div className="shadow-2xl rounded-3xl overflow-hidden bg-black border border-white/5" style={{ width: '338.8px', height: '822.7px' }}>
@@ -562,20 +597,22 @@ const App = () => {
             </div>
           </div>
 
+          {/* 기존 P4 */}
           <div className="flex flex-col items-center gap-8">
             <span className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">P4. Shop Display</span>
             <div id="public-display" className="shadow-2xl rounded-3xl overflow-hidden bg-black border border-white/5" style={{ width: '345.6px', height: '345.6px' }}>
               <div style={{ width: '1080px', height: '1080px', transform: 'scale(0.32)', transformOrigin: 'top left' }}>
-                <DisplayMockupLayout order={publicOrder} isExport={true} />
+                <DisplayMockupLayout isExport={true} />
               </div>
             </div>
           </div>
 
+          {/* 기존 P5 */}
           <div className="flex flex-col items-center gap-8">
             <span className="text-white/30 text-[10px] font-black uppercase italic tracking-widest">P5. Mobile App</span>
             <div id="public-client" className="shadow-2xl rounded-3xl overflow-hidden bg-black border border-white/5" style={{ width: '345.6px', height: '345.6px' }}>
               <div style={{ width: '1080px', height: '1080px', transform: 'scale(0.32)', transformOrigin: 'top left' }}>
-                <ClientMockupLayout order={publicOrder} isExport={true} />
+                <ClientMockupLayout isExport={true} />
               </div>
             </div>
           </div>
@@ -712,6 +749,8 @@ const App = () => {
                         <td className="px-8 py-7 text-center" onClick={e => e.stopPropagation()}>
                           <div className="flex items-center justify-center gap-2">
                             <button onClick={() => openStudio(o)} className="p-3 bg-slate-100 text-slate-900 rounded-xl hover:bg-black hover:text-white transition-all"><Send size={16} /></button>
+
+                            {/* ✅ 링크 복사도 무조건 Vercel 링크 */}
                             <button onClick={() => {
                               const shareUrl = `${DEPLOY_URL}/?v=${o.id}`;
                               const textArea = document.createElement("textarea");
@@ -838,8 +877,8 @@ const App = () => {
                 {messagePage === 1 && <TeaserLayout order={selectedOrderForMessage} color={selectedOrderForMessage.dominantColor || dominantColor} />}
                 {messagePage === 2 && <SchedulerLayout order={selectedOrderForMessage} desc={selectedOrderForMessage.description} />}
                 {messagePage === 3 && <PosterLayout order={selectedOrderForMessage} color={selectedOrderForMessage.dominantColor || dominantColor} desc={selectedOrderForMessage.description} />}
-                {messagePage === 4 && <DisplayMockupLayout order={selectedOrderForMessage} isExport={false} />}
-                {messagePage === 5 && <ClientMockupLayout order={selectedOrderForMessage} isExport={false} />}
+                {messagePage === 4 && <DisplayMockupLayout isExport={false} />}
+                {messagePage === 5 && <ClientMockupLayout isExport={false} />}
               </div>
             </div>
           </div>
